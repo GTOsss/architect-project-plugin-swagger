@@ -1,0 +1,28 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Form-Creator",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-form-creator.webstap.ru/",
+      "description": "Production server"
+    },
+    {
+      "url": "https://localhost:{port}",
+      "description": "Local testing server",
+      "variables": {
+        "port": {
+          "enum": ["3000"],
+          "default": "3000"
+        }
+      }
+    }
+  ],
+  "components": {
+  },
+  "paths": {
+  },
+  "tags": []
+}
