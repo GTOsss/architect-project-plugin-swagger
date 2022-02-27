@@ -1,0 +1,521 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`struct-with-route createEndpointsBySwaggerSpec 1`] = `
+Object {
+  "endpoints": Array [
+    Object {
+      "URLGetter": Object {
+        "code": "export const postAuthSignUp = () => \`/auth/sign-up\`",
+        "name": "postAuthSignUp",
+        "params": Array [],
+        "paramsCode": "",
+      },
+      "method": "post",
+      "path": "/auth/sign-up",
+      "requestFunction": Object {
+        "params": Array [
+          "data",
+        ],
+        "paramsCode": "{data}",
+        "paramsWithTypeCode": "{data}: PostAuthSignUpParams",
+        "typeParamsMap": Object {
+          "data": "export type PostAuthSignUpDataParams = {
+email?: string,
+firstName?: string,
+lastName?: string,
+password?: string
+}",
+          "params": "export type PostAuthSignUpParams = {
+data: PostAuthSignUpDataParams
+}",
+          "result": "export type PostAuthSignUpResult = {
+id?: ID,
+firstName?: string,
+lastName?: string,
+email?: string,
+role?: string,
+removedAt?: string,
+blockedAt?: string,
+createdAt?: string,
+updatedAt?: string,
+passwordHash?: string
+}",
+        },
+        "typeParamsNamesMap": Object {
+          "data": "PostAuthSignUpDataParams",
+          "params": "PostAuthSignUpParams",
+          "result": "PostAuthSignUpResult",
+        },
+      },
+      "swagger": Object {
+        "description": "Доступно неавторизованным пользователям",
+        "operationId": "addUser",
+        "requestBody": Object {
+          "content": Object {
+            "application/json": Object {
+              "schema": Object {
+                "properties": Object {
+                  "email": Object {
+                    "type": "string",
+                  },
+                  "firstName": Object {
+                    "type": "string",
+                  },
+                  "lastName": Object {
+                    "type": "string",
+                  },
+                  "password": Object {
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+        },
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "properties": Object {
+                    "blockedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "createdAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "email": Object {
+                      "type": "string",
+                    },
+                    "firstName": Object {
+                      "type": "string",
+                    },
+                    "id": Object {
+                      "type": "integer",
+                    },
+                    "lastName": Object {
+                      "type": "string",
+                    },
+                    "passwordHash": Object {
+                      "type": "string",
+                    },
+                    "removedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "role": Object {
+                      "type": "string",
+                    },
+                    "updatedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Success",
+          },
+          "401": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "properties": Object {
+                    "message": Object {
+                      "example": "LOGIN_OR_PASSWORD_INCORRECT",
+                      "type": "string",
+                    },
+                    "status": Object {
+                      "example": 401,
+                      "type": "integer",
+                    },
+                  },
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Incorrect login/password",
+          },
+        },
+        "summary": "Регистрация пользователя",
+        "tags": Array [
+          "auth",
+        ],
+      },
+    },
+  ],
+  "pathPrefix": "",
+}
+`;
+
+exports[`struct-with-route createTypesFromSchemesBySwaggerSpec 1`] = `
+Object {
+  "endpoints": Array [
+    Object {
+      "URLGetter": Object {
+        "code": "export const postAuthSignUp = () => \`/auth/sign-up\`",
+        "name": "postAuthSignUp",
+        "params": Array [],
+        "paramsCode": "",
+      },
+      "method": "post",
+      "path": "/auth/sign-up",
+      "requestFunction": Object {
+        "params": Array [
+          "data",
+        ],
+        "paramsCode": "{data}",
+        "paramsWithTypeCode": "{data}: PostAuthSignUpParams",
+        "typeParamsMap": Object {
+          "data": "export type PostAuthSignUpDataParams = {
+email?: string,
+firstName?: string,
+lastName?: string,
+password?: string
+}",
+          "params": "export type PostAuthSignUpParams = {
+data: PostAuthSignUpDataParams
+}",
+          "result": "export type PostAuthSignUpResult = {
+id?: ID,
+firstName?: string,
+lastName?: string,
+email?: string,
+role?: string,
+removedAt?: string,
+blockedAt?: string,
+createdAt?: string,
+updatedAt?: string,
+passwordHash?: string
+}",
+        },
+        "typeParamsNamesMap": Object {
+          "data": "PostAuthSignUpDataParams",
+          "params": "PostAuthSignUpParams",
+          "result": "PostAuthSignUpResult",
+        },
+      },
+      "swagger": Object {
+        "description": "Доступно неавторизованным пользователям",
+        "operationId": "addUser",
+        "requestBody": Object {
+          "content": Object {
+            "application/json": Object {
+              "schema": Object {
+                "properties": Object {
+                  "email": Object {
+                    "type": "string",
+                  },
+                  "firstName": Object {
+                    "type": "string",
+                  },
+                  "lastName": Object {
+                    "type": "string",
+                  },
+                  "password": Object {
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+        },
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "properties": Object {
+                    "blockedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "createdAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "email": Object {
+                      "type": "string",
+                    },
+                    "firstName": Object {
+                      "type": "string",
+                    },
+                    "id": Object {
+                      "type": "integer",
+                    },
+                    "lastName": Object {
+                      "type": "string",
+                    },
+                    "passwordHash": Object {
+                      "type": "string",
+                    },
+                    "removedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                    "role": Object {
+                      "type": "string",
+                    },
+                    "updatedAt": Object {
+                      "format": "date-time",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Success",
+          },
+          "401": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "properties": Object {
+                    "message": Object {
+                      "example": "LOGIN_OR_PASSWORD_INCORRECT",
+                      "type": "string",
+                    },
+                    "status": Object {
+                      "example": 401,
+                      "type": "integer",
+                    },
+                  },
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Incorrect login/password",
+          },
+        },
+        "summary": "Регистрация пользователя",
+        "tags": Array [
+          "auth",
+        ],
+      },
+    },
+  ],
+  "pathPrefix": "",
+}
+`;
+
+exports[`struct-with-route-components createEndpointsBySwaggerSpec 1`] = `
+Object {
+  "endpoints": Array [
+    Object {
+      "URLGetter": Object {
+        "code": "export const getDocumentsUser = () => \`/documents/user\`",
+        "name": "getDocumentsUser",
+        "params": Array [],
+        "paramsCode": "",
+      },
+      "method": "get",
+      "path": "/documents/user",
+      "requestFunction": Object {
+        "params": Array [
+          "query",
+        ],
+        "paramsCode": "{query}",
+        "paramsWithTypeCode": "{query}: GetDocumentsUserParams",
+        "typeParamsMap": Object {
+          "params": "export type GetDocumentsUserParams = {
+query: GetDocumentsUserQueryParams
+}",
+          "query": "export type GetDocumentsUserQueryParams = {
+limit?: any,offset?: any
+};",
+          "result": "export type GetDocumentsUserResult = DocumentsResponse",
+        },
+        "typeParamsNamesMap": Object {
+          "params": "GetDocumentsUserParams",
+          "query": "GetDocumentsUserQueryParams",
+          "result": "GetDocumentsUserResult",
+        },
+      },
+      "swagger": Object {
+        "description": "Доступно авторизованным пользователям",
+        "operationId": "getUserDocs",
+        "parameters": Array [
+          Object {
+            "description": "количество получаемых документов, необязательный, больше нуля",
+            "explode": true,
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": Object {
+              "type": "number",
+            },
+            "style": "form",
+          },
+          Object {
+            "description": "количество пропускаемых документов, необязательный, больше нуля.",
+            "explode": true,
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": Object {
+              "type": "number",
+            },
+            "style": "form",
+          },
+        ],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/DocumentsResponse",
+                },
+              },
+            },
+            "description": "Document",
+          },
+          "401": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/Unauthorized",
+                },
+              },
+            },
+            "description": "Unauthorized error",
+          },
+          "403": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/Forbidden",
+                },
+              },
+            },
+            "description": "Forbidden error",
+          },
+        },
+        "security": Array [
+          Object {
+            "JWTAuth": Array [],
+          },
+        ],
+        "summary": "Получение списка документов пользователя",
+        "tags": Array [
+          "documents",
+        ],
+      },
+    },
+  ],
+  "pathPrefix": "",
+}
+`;
+
+exports[`struct-with-route-components createTypesFromSchemesBySwaggerSpec 1`] = `
+Object {
+  "endpoints": Array [
+    Object {
+      "URLGetter": Object {
+        "code": "export const getDocumentsUser = () => \`/documents/user\`",
+        "name": "getDocumentsUser",
+        "params": Array [],
+        "paramsCode": "",
+      },
+      "method": "get",
+      "path": "/documents/user",
+      "requestFunction": Object {
+        "params": Array [
+          "query",
+        ],
+        "paramsCode": "{query}",
+        "paramsWithTypeCode": "{query}: GetDocumentsUserParams",
+        "typeParamsMap": Object {
+          "params": "export type GetDocumentsUserParams = {
+query: GetDocumentsUserQueryParams
+}",
+          "query": "export type GetDocumentsUserQueryParams = {
+limit?: any,offset?: any
+};",
+          "result": "export type GetDocumentsUserResult = DocumentsResponse",
+        },
+        "typeParamsNamesMap": Object {
+          "params": "GetDocumentsUserParams",
+          "query": "GetDocumentsUserQueryParams",
+          "result": "GetDocumentsUserResult",
+        },
+      },
+      "swagger": Object {
+        "description": "Доступно авторизованным пользователям",
+        "operationId": "getUserDocs",
+        "parameters": Array [
+          Object {
+            "description": "количество получаемых документов, необязательный, больше нуля",
+            "explode": true,
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": Object {
+              "type": "number",
+            },
+            "style": "form",
+          },
+          Object {
+            "description": "количество пропускаемых документов, необязательный, больше нуля.",
+            "explode": true,
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": Object {
+              "type": "number",
+            },
+            "style": "form",
+          },
+        ],
+        "responses": Object {
+          "200": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/DocumentsResponse",
+                },
+              },
+            },
+            "description": "Document",
+          },
+          "401": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/Unauthorized",
+                },
+              },
+            },
+            "description": "Unauthorized error",
+          },
+          "403": Object {
+            "content": Object {
+              "application/json": Object {
+                "schema": Object {
+                  "$ref": "#/components/schemas/Forbidden",
+                },
+              },
+            },
+            "description": "Forbidden error",
+          },
+        },
+        "security": Array [
+          Object {
+            "JWTAuth": Array [],
+          },
+        ],
+        "summary": "Получение списка документов пользователя",
+        "tags": Array [
+          "documents",
+        ],
+      },
+    },
+  ],
+  "pathPrefix": "",
+}
+`;

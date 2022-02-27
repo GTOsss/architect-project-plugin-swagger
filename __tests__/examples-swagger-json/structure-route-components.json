@@ -1,0 +1,259 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Form-Creator",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-form-creator.webstap.ru/",
+      "description": "Production server"
+    },
+    {
+      "url": "https://localhost:{port}",
+      "description": "Local testing server",
+      "variables": {
+        "port": {
+          "enum": ["3000"],
+          "default": "3000"
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "JWTAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "CreateDocument": {
+        "type": "object",
+        "properties": {
+          "folderId": {
+            "type": "integer",
+            "required": true
+          },
+          "formId": {
+            "type": "integer",
+            "required": true
+          },
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "textSource": {
+            "type": "string",
+            "required": true
+          },
+          "paragraphsValue": {
+            "type": "array",
+            "required": true,
+            "items": {
+              "type": "object",
+              "description": "JSON объект"
+            }
+          },
+          "documentSettings": {
+            "type": "object",
+            "required": true,
+            "description": "JSON объект"
+          },
+          "keys": {
+            "type": "array",
+            "required": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "keysValues": {
+            "type": "object",
+            "required": true,
+            "description": "JSON объект"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "required": true
+          }
+        }
+      },
+      "DocumentResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateDocument"
+          },
+          {
+            "required": [
+              "id",
+              "createdAt",
+              "updatedAt",
+              "removedAt"
+            ],
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "userId": {
+                "type": "integer"
+              },
+              "removedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "DocumentsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentResponse"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "example": 401
+          },
+          "message": {
+            "type": "string",
+            "example": "UNAUTHORIZED"
+          }
+        }
+      },
+      "Forbidden": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "example": 403
+          },
+          "message": {
+            "type": "string",
+            "example": "FORBIDDEN"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "SignUpUser": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/documents/user": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Получение списка документов пользователя",
+        "description": "Доступно авторизованным пользователям",
+        "operationId": "getUserDocs",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "количество получаемых документов, необязательный, больше нуля",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "количество пропускаемых документов, необязательный, больше нуля.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Forbidden"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

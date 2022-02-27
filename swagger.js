@@ -29,19 +29,21 @@ function createTypeForEnum({ field, schema, typesMap, overrideFieldTypesMap }) {
 }
 
 function createTypeForObject({ field, schema, typesMap, overrideFieldTypesMap }) {
-  let resultType = [];
+  const resultType = [];
 
-  if (schema['$ref']) {
-    const refSplitted = schema['$ref'].split('/');
+  if (schema.$ref) {
+    const refSplitted = schema.$ref.split('/');
     resultType.push(refSplitted[refSplitted.length - 1]);
   }
 
   if (schema.properties) {
     const typeProperties = [];
+    const requiredFields = schema.required || [];
     Object.entries(schema.properties).forEach(([field, fieldSchema]) => {
       const typeProp = createTypeByTypeMap({ field, schema: fieldSchema, typesMap, overrideFieldTypesMap });
       const typeSuffix = fieldSchema.nullable ? '| null' : ''; // возможно тут можно ставить '?' перед самим полем
-      typeProperties.push(`${field}: ${typeProp}${typeSuffix}`);
+      const requiredPrefix = fieldSchema.required || requiredFields.includes(field) ? '' : '?';
+      typeProperties.push(`${field}${requiredPrefix}: ${typeProp}${typeSuffix}`);
     });
     const joinSeparator = getJoinSeparator(typeProperties.length);
     const startEnd = joinSeparator ? '\n' : '';
@@ -72,12 +74,12 @@ function createTypeForArray({ field, schema, typesMap, overrideFieldTypesMap }) 
   return `Array<${typeItem}>`;
 }
 
-function createTypeByTypeMap({ field, schema, typesMap, overrideFieldTypesMap }) {
-  if(schema){
+function createTypeByTypeMap({ field, schema, typesMap, overrideFieldTypesMap, checkRequire }) {
+  if (schema) {
     let type = schema.type;
-    const isObject = schema['$ref'] || schema['properties'] || schema['allOf'] || schema['oneOf'] || schema['anyOf'];
+    const isObject = schema.$ref || schema.properties || schema.allOf || schema.oneOf || schema.anyOf;
     const isArray = schema.type === 'array';
-    const isEnum = schema['enum'];
+    const isEnum = schema.enum;
     type = isObject ? 'object' : type;
     type = isEnum ? 'enum' : type;
 
@@ -93,19 +95,50 @@ function createTypeByTypeMap({ field, schema, typesMap, overrideFieldTypesMap })
 
     return typeCreatorMap[type]({ schema, typesMap, overrideFieldTypesMap });
   }
-
 }
 
+const pushTypesFromSchemesBySwaggerSpec = ({ schema, typesMap, overrideFieldTypesMap, name, typeNames, typeCodes }) => {
+  let resultType = createTypeByTypeMap({ schema, typesMap, overrideFieldTypesMap });
+  resultType = `export type ${name} = ${resultType}`;
+  typeNames.push(name);
+  typeCodes.push(resultType);
+};
+
 function createTypesFromSchemesBySwaggerSpec({ swaggerSpec, typesMap, overrideFieldTypesMap }) {
-  const schemas = swaggerSpec.components.schemas;
   const typeCodes = [];
   const typeNames = [];
-
-  Object.entries(schemas).forEach(([name, schema]) => {
-    let resultType = createTypeByTypeMap({ schema, typesMap, overrideFieldTypesMap });
-    resultType = `export type ${name} = ${resultType}`;
-    typeNames.push(name);
-    typeCodes.push(resultType);
+  Object.values(swaggerSpec.components).forEach((component) => {
+    Object.entries(component).forEach(([name, body]) => {
+      if (body.type || body.$ref || body.allOf) {
+        pushTypesFromSchemesBySwaggerSpec({
+          schema: body,
+          typesMap,
+          overrideFieldTypesMap,
+          name,
+          typeNames,
+          typeCodes,
+        });
+      } else if (body.content?.['application/json']?.schema || body.content?.['multipart/form-data']?.schema) {
+        const schema = body.content?.['application/json']?.schema || body.content?.['multipart/form-data']?.schema;
+        pushTypesFromSchemesBySwaggerSpec({
+          schema,
+          typesMap,
+          overrideFieldTypesMap,
+          name,
+          typeNames,
+          typeCodes,
+        });
+      } else if (body.properties?.items?.type) {
+        pushTypesFromSchemesBySwaggerSpec({
+          schema: body.properties.items,
+          typesMap,
+          overrideFieldTypesMap,
+          name,
+          typeNames,
+          typeCodes,
+        });
+      }
+    });
   });
 
   return { typeCodes, typeNames };
@@ -115,11 +148,11 @@ const createTypesForRequestMethod = ({ method, URLGetterName, methodInfo, typesM
   let result = {};
   const nameParamsMap = {};
 
-  let fieldsPath = [];
-  let fieldsQuery = [];
-  let fieldsHeader = [];
-  let fieldsFormData = [];
-  let fieldsBody = [];
+  const fieldsPath = [];
+  const fieldsQuery = [];
+  const fieldsHeader = [];
+  const fieldsFormData = [];
+  const fieldsBody = [];
 
   const fieldsMap = {
     query: fieldsQuery,
@@ -128,29 +161,34 @@ const createTypesForRequestMethod = ({ method, URLGetterName, methodInfo, typesM
     formData: fieldsFormData,
     body: fieldsBody,
   };
-
   if (methodInfo.parameters) {
     methodInfo.parameters.forEach((param) => {
       const field = param.name;
       const type = createTypeByTypeMap({ schema: param.schema, field, typesMap, overrideFieldTypesMap });
       const formattedField = field.replace(/[^\w]+/g, '');
       const fieldSuffix = param.required ? '' : '?';
-      fieldsMap[param.in].push(`${formattedField}${fieldSuffix}: ${type}`);
+      const typeName = `${formattedField}${fieldSuffix}`;
+      if (param.in === 'body') {
+        const camelCaseTypeName = toCamelCase(typeName);
+        result.data = `export type ${camelCaseTypeName} = ${type}`;
+        nameParamsMap.data = camelCaseTypeName;
+      } else {
+        fieldsMap[param.in].push(`${typeName}: ${type}`);
+      }
     });
   }
 
   if (methodInfo.requestBody) {
-
     let schema;
 
     if (methodInfo.requestBody.content) {
       schema = methodInfo.requestBody.content['application/json'].schema;
-    } else if (methodInfo.requestBody['$ref']) {
-      schema = {['$ref']: methodInfo.requestBody['$ref']};
+    } else if (methodInfo.requestBody.$ref) {
+      schema = { ['$ref']: methodInfo.requestBody.$ref };
     }
 
-    const type = createTypeByTypeMap({ schema, typesMap, overrideFieldTypesMap });
-    let typeName = toCamelCase([URLGetterName, 'data', 'params']);
+    const type = createTypeByTypeMap({ schema, typesMap, overrideFieldTypesMap, checkRequire: true });
+    const typeName = toCamelCase([URLGetterName, 'data', 'params']);
     result.data = `export type ${typeName} = ${type}`;
     nameParamsMap.data = typeName;
   }
@@ -158,7 +196,7 @@ const createTypesForRequestMethod = ({ method, URLGetterName, methodInfo, typesM
   const responseSchema = getIn(methodInfo, `responses.200.content['application/json'].schema`);
   if (responseSchema) {
     const type = createTypeByTypeMap({ schema: responseSchema, typesMap, overrideFieldTypesMap });
-    let typeName = toCamelCase([URLGetterName, 'result']);
+    const typeName = toCamelCase([URLGetterName, 'result']);
     result.result = `export type ${typeName} = ${type}`;
     nameParamsMap.result = typeName;
   }
@@ -166,20 +204,17 @@ const createTypesForRequestMethod = ({ method, URLGetterName, methodInfo, typesM
   if (method === 'post') {
     delete fieldsMap.query;
   }
-
   const createType = ({ typeName, fields }) => `export type ${typeName} = {\n${fields}\n};`;
-
   result = Object.entries(fieldsMap).reduce((acc, [paramIn, fields]) => {
     if (fields.length) {
       const typeNameSuffix = paramIn === 'path' ? 'url' : paramIn;
-      let typeName = toCamelCase([URLGetterName, typeNameSuffix, 'params']);
+      const typeName = toCamelCase([URLGetterName, typeNameSuffix, 'params']);
       nameParamsMap[paramIn] = typeName;
       fields = fields.join(',');
       acc[paramIn] = createType({ typeName, fields });
     }
     return acc;
   }, result);
-
   const params = Object.entries(nameParamsMap).reduce((acc, [kindOfParam, type]) => {
     if (kindOfParam === 'path') {
       kindOfParam = 'urlParams';
@@ -255,7 +290,7 @@ const templateRequestFunction = ({
     post: () => [urlParams, 'data'].filter(filterParams),
     put: () => [urlParams, 'data'].filter(filterParams),
     patch: () => [urlParams, 'data'].filter(filterParams),
-    delete: () => [urlParams].filter(filterParams),
+    delete: () => [urlParams, 'data'].filter(filterParams),
   };
   const params = getRequestParamsMap[method]();
 
